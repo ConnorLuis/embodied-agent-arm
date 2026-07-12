@@ -1,0 +1,13 @@
+name: embodiedarm
+
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.10.18
+  - pip
+  - ffmpeg=7.1.1
+  - evdev
+  - pytest
+  - ruff
+  - mypy
