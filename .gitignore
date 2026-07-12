@@ -35,3 +35,6 @@ third_party/
 # OS
 .DS_Store
 Thumbs.db
+
+# 厂商原始安装包和源码快照
+vendor_packages/
