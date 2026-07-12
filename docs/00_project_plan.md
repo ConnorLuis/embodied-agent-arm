@@ -1,28 +1,231 @@
-# Project Plan
+# 项目计划
 
-## Target Task
+## 1. 项目名称
 
-Use teleoperation demonstrations and imitation learning to make the follower arm
-pick up a colored block and place it into a designated target area.
+`embodied-agent-arm`
 
-## Core Pipeline
+中文名称：基于 LeRobot、双视角感知与 LLM Agent 的低成本机械臂具身操作系统。
 
-1. Robot calibration
-2. Leader-Follower teleoperation
-3. Camera configuration
-4. Demonstration recording
-5. Dataset validation
-6. ACT policy training
-7. Real-robot rollout
-8. Agent tool integration
-9. Visual result verification
-10. Experiment evaluation
+## 2. 项目目标
 
-## Safety Requirements
+本项目面向低成本主从机械臂，构建一个完整的具身智能操作闭环，使系统能够完成：
 
-- Joint limit validation
-- Workspace boundary checks
-- Action timeout
-- Emergency stop
-- Low-speed initial testing
-- Manual supervision during rollout
+```text
+自然语言任务输入
+→ 视觉感知
+→ 高层任务规划
+→ 机械臂技能或策略执行
+→ 真实环境反馈
+→ 结果验证与评估
+```
+
+第一阶段聚焦单一、稳定、可量化的桌面操作任务：
+
+> 使用 Leader 示教臂采集演示数据，通过模仿学习训练 Follower 执行臂，使其能够抓取彩色方块并放入指定目标区域。
+
+## 3. 硬件配置
+
+- 幻尔 SO-ARM101 兼容版 Leader 示教臂
+- 幻尔 SO-ARM101 兼容版 Follower 执行臂
+- 第一视角腕部摄像头
+- 第三视角固定摄像头
+- HX 系列磁编码总线舵机
+- USB 总线舵机驱动模块
+- USB 集线器
+- 独立电源
+- 桌面固定夹具
+
+## 4. 核心技术路线
+
+1. 机械臂连接与设备端口识别
+2. 舵机通信与关节状态读取
+3. Leader 与 Follower 标定
+4. Leader-Follower 主从遥操作
+5. 双摄像头配置与画面同步
+6. 演示数据采集与回放
+7. LeRobotDataset 数据检查
+8. ACT 行为克隆策略训练
+9. 真实机械臂策略部署
+10. LLM Agent 与 MCP 高层任务接入
+11. 视觉结果验证
+12. 实验评估与失败案例分析
+
+## 5. 系统架构
+
+```text
+用户自然语言指令
+        ↓
+LLM Agent / LangGraph
+        ↓
+高层技能选择与任务编排
+        ↓
+视觉工具 / 机器人技能 / 安全检查
+        ↓
+LeRobot Policy 或预定义技能
+        ↓
+Follower 执行臂
+        ↓
+双摄像头反馈
+        ↓
+任务结果验证与执行轨迹记录
+```
+
+## 6. 模块划分
+
+### 6.1 机器人控制模块
+
+负责：
+
+- 机械臂连接
+- 关节状态读取
+- 关节动作下发
+- 夹爪控制
+- 标定文件管理
+- 关节限位
+- 工作空间约束
+- 紧急停止
+
+### 6.2 视觉感知模块
+
+负责：
+
+- 第一视角摄像头读取
+- 第三视角摄像头读取
+- 目标检测
+- 目标位置估计
+- 放置区域识别
+- 任务完成结果验证
+
+### 6.3 数据与策略模块
+
+负责：
+
+- 遥操作演示数据录制
+- Episode 管理
+- 数据集检查
+- ACT 策略训练
+- Checkpoint 管理
+- 真实机械臂 Rollout
+
+### 6.4 Agent 模块
+
+负责：
+
+- 自然语言任务理解
+- 高层技能选择
+- 任务步骤编排
+- 工具调用
+- 执行结果总结
+- 有限次数重试
+
+LLM Agent 不直接生成原始舵机值，也不直接承担高频关节控制。
+
+## 7. 开发里程碑
+
+### M0：仓库与基础环境初始化
+
+- 创建本地 Git 仓库
+- 创建 GitHub 公共仓库
+- 建立项目目录结构
+- 创建独立 Conda 环境
+- 固定基础 Python 与 FFmpeg 版本
+- 建立项目计划和阅读笔记
+
+### M1：机械臂接入与标定
+
+- 识别 Leader 与 Follower USB 端口
+- 验证 USB 总线驱动模块
+- 读取舵机状态
+- 完成机械臂标定
+- 验证夹爪开合
+- 验证关节方向与限位
+
+### M2：主从遥操作
+
+- 实现 Leader 控制 Follower
+- 验证动作方向一致性
+- 检查通信频率与延迟
+- 添加动作限幅
+- 验证紧急停止
+- 连续运行稳定性测试
+
+### M3：双摄像头与数据采集
+
+- 配置第一视角摄像头
+- 配置第三视角摄像头
+- 确认摄像头稳定标识
+- 录制演示 Episode
+- 回放动作
+- 检查图像、状态与动作同步
+
+### M4：ACT 行为克隆
+
+- 整理高质量演示数据
+- 配置 ACT 训练参数
+- 完成训练
+- 保存 Checkpoint
+- 部署到真实 Follower
+- 评估自主任务成功率
+
+### M5：Agent 与 MCP 接入
+
+- 封装机器人技能工具
+- 封装视觉检测工具
+- 封装任务验证工具
+- 增加安全决策层
+- 实现自然语言高层控制
+- 记录 Agent 执行轨迹
+
+### M6：评估与展示
+
+- 完成重复实验
+- 汇总成功率与耗时
+- 分类失败原因
+- 完成系统架构图
+- 完成 README
+- 完成演示视频
+- 整理简历项目描述
+
+## 8. 安全要求
+
+- 所有关节必须设置角度限制
+- 所有动作必须经过工作空间检查
+- 初次调试必须使用低速
+- 初次策略 Rollout 必须清空工作区
+- 机械臂运行时必须有人在场
+- 必须提供动作超时机制
+- 必须提供紧急停止入口
+- 异常抖动、失控或通信中断时立即断电
+- LLM 生成的高层任务必须经过技能白名单验证
+- 禁止 LLM 直接生成未经校验的底层关节轨迹
+
+## 9. 评估指标
+
+- 主从遥操作稳定性
+- 数据录制成功率
+- 目标抓取成功率
+- 放置成功率
+- 端到端任务成功率
+- 平均任务完成时间
+- 人工干预次数
+- 目标位置误差
+- 通信异常次数
+- 策略失败类别
+
+## 10. 预期展示任务
+
+第一版只完成一个稳定任务：
+
+> 机械臂识别并抓取指定颜色的方块，将其放入指定目标区域，并通过第三视角摄像头验证任务是否完成。
+
+## 11. 后续扩展方向
+
+- 多物体分类抓取
+- 多任务策略训练
+- SmolVLA 或其他 VLA 模型
+- ROS2 Adapter
+- MoveIt2 运动规划
+- 手眼标定
+- 失败恢复策略
+- 多轮 Agent 任务编排
+- 多机械臂协作
