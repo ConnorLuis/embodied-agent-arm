@@ -1,0 +1,193 @@
+{
+  "schema_version": "so101_act_v3_delta_runtime_limit_contract_v1",
+  "status": "FROZEN_FOR_OFFLINE_DRY_RUN",
+  "scope": {
+    "offline_dry_run_only": true,
+    "hardware_access_allowed": false,
+    "hardware_deployment_authorized": false,
+    "physical_safety_certified": false,
+    "recalibration_authorized": false
+  },
+  "source_evidence": {
+    "follower_calibration": "~/.cache/huggingface/lerobot/calibration/robots/so101_follower/follower_white.json",
+    "follower_config": "vendor/hiwonder/lerobot/src/lerobot/robots/so101_follower/config_so101_follower.py",
+    "follower_runtime": "vendor/hiwonder/lerobot/src/lerobot/robots/so101_follower/so101_follower.py",
+    "normalization_runtime": "vendor/hiwonder/lerobot/src/lerobot/motors/motors_bus.py",
+    "reviewed_safety_controller": "scripts/teleop/relative_teleop_safe.py",
+    "selection_record": "outputs/release/act_red_cube_v3_delta_011000/best_checkpoint.json"
+  },
+  "robot": {
+    "type": "so101_follower",
+    "id": "follower_white",
+    "use_degrees": false,
+    "motors": [
+      "shoulder_pan",
+      "shoulder_lift",
+      "elbow_flex",
+      "wrist_flex",
+      "wrist_roll",
+      "gripper"
+    ],
+    "normalization": {
+      "shoulder_pan": {
+        "mode": "RANGE_M100_100",
+        "normalized_range": [-100.0, 100.0]
+      },
+      "shoulder_lift": {
+        "mode": "RANGE_M100_100",
+        "normalized_range": [-100.0, 100.0]
+      },
+      "elbow_flex": {
+        "mode": "RANGE_M100_100",
+        "normalized_range": [-100.0, 100.0]
+      },
+      "wrist_flex": {
+        "mode": "RANGE_M100_100",
+        "normalized_range": [-100.0, 100.0]
+      },
+      "wrist_roll": {
+        "mode": "RANGE_M100_100",
+        "normalized_range": [-100.0, 100.0]
+      },
+      "gripper": {
+        "mode": "RANGE_0_100",
+        "normalized_range": [0.0, 100.0]
+      }
+    },
+    "expected_calibration_raw": {
+      "shoulder_pan": {
+        "id": 1,
+        "drive_mode": 0,
+        "homing_offset": 458,
+        "range_min": 684,
+        "range_max": 3294
+      },
+      "shoulder_lift": {
+        "id": 2,
+        "drive_mode": 0,
+        "homing_offset": 1010,
+        "range_min": 886,
+        "range_max": 3287
+      },
+      "elbow_flex": {
+        "id": 3,
+        "drive_mode": 0,
+        "homing_offset": -1080,
+        "range_min": 915,
+        "range_max": 3126
+      },
+      "wrist_flex": {
+        "id": 4,
+        "drive_mode": 0,
+        "homing_offset": -181,
+        "range_min": 814,
+        "range_max": 3182
+      },
+      "wrist_roll": {
+        "id": 5,
+        "drive_mode": 0,
+        "homing_offset": -83,
+        "range_min": 93,
+        "range_max": 3955
+      },
+      "gripper": {
+        "id": 6,
+        "drive_mode": 0,
+        "homing_offset": -35,
+        "range_min": 1479,
+        "range_max": 2993
+      }
+    }
+  },
+  "policy": {
+    "candidate_step": 11000,
+    "candidate_root": "outputs/release/act_red_cube_v3_delta_011000",
+    "observation_state_dim": 18,
+    "observation_state_order": [
+      "actual_q_t[6]",
+      "last_sent_command_t[6]",
+      "last_sent_delta_t[6]"
+    ],
+    "action_dim": 6,
+    "action_semantics": "command_delta",
+    "chunk_size": 10,
+    "n_action_steps": 5,
+    "replan_interval_frames": 5,
+    "dataset_fps": 15,
+    "use_vae": false,
+    "use_amp": false
+  },
+  "startup": {
+    "required_previous_command": [
+      12.994799613952637,
+      -31.88789939880371,
+      48.33190155029297,
+      43.222900390625,
+      0.36250001192092896,
+      27.65489959716797
+    ],
+    "required_previous_delta": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    "dataset_match_tolerance": 0.001,
+    "require_home_before_future_hardware_execution": true
+  },
+  "guard": {
+    "numerical_tolerance": 1e-06,
+    "order": [
+      "reject non-finite or wrong-shaped prediction",
+      "clamp each predicted delta by max_abs_delta_per_command",
+      "add the clamped delta to last_sent_command",
+      "clamp the resulting absolute command by normal_soft_limits",
+      "set actual_sent_delta to guarded_command minus last_sent_command",
+      "update last_sent_command and last_sent_delta with guarded values"
+    ],
+    "max_abs_delta_per_command": {
+      "shoulder_pan": 1.5,
+      "shoulder_lift": 1.2,
+      "elbow_flex": 1.2,
+      "wrist_flex": 1.5,
+      "wrist_roll": 2.0,
+      "gripper": 2.5
+    },
+    "normal_soft_limits": {
+      "shoulder_pan": [-60.0, 60.0],
+      "shoulder_lift": [-60.0, 65.0],
+      "elbow_flex": [-65.0, 65.0],
+      "wrist_flex": [-60.0, 60.0],
+      "wrist_roll": [-90.0, 90.0],
+      "gripper": [5.0, 95.0]
+    },
+    "tracking_error_limit": {
+      "shoulder_pan": 12.0,
+      "shoulder_lift": 12.0,
+      "elbow_flex": 12.0,
+      "wrist_flex": 12.0,
+      "wrist_roll": 12.0,
+      "gripper": 15.0
+    },
+    "tracking_error_timeout_seconds": 2.0,
+    "follower_sensor_tolerance": 5.0,
+    "fail_closed_conditions": [
+      "NaN or Inf",
+      "state/action shape mismatch",
+      "missing or changed calibration",
+      "startup previous command mismatch",
+      "guarded command outside soft limits",
+      "actual sent delta larger than the per-command limit"
+    ]
+  },
+  "dry_run_protocol": {
+    "data_source": "physically separate v3 validation dataset",
+    "images": "recorded validation images only",
+    "actual_q": "recorded validation actual_q at each replan frame",
+    "command_state": "recursively simulated guarded last_sent_command and last_sent_delta",
+    "counterfactual_warning": "Recorded images and actual_q do not react to simulated model commands; this checks numerical runtime stability, not closed-loop task success.",
+    "command_write": "forbidden",
+    "robot_object": "forbidden",
+    "serial_port": "forbidden"
+  },
+  "future_hardware_stage": {
+    "authorized": false,
+    "built_in_max_relative_target_current_default": null,
+    "note": "A later hardware adapter must independently review live readback, stale-frame handling, tracking timeout, emergency stop, and built-in max_relative_target."
+  }
+}

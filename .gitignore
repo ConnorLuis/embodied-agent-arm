@@ -38,3 +38,12 @@ Thumbs.db
 
 # 厂商原始安装包和源码快照
 vendor_packages/
+data/lerobot/
+outputs/train/
+logs/train/
+
+logs/
+
+*:Zone.Identifier
+
+*.bak
