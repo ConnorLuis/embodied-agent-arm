@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "project": "SO-ARM101 dual-view ACT imitation learning and safe deployment",
+  "stage": "stage1",
+  "status": "CLOSED_FROZEN",
+  "conclusion": "Engineering pipeline complete; policy task failed; deployment frozen by pre-defined and frozen stop criteria.",
+  "dataset": {
+    "train_episodes": 48,
+    "validation_episodes": 12,
+    "train_frames": 42678,
+    "validation_frames": 10704,
+    "total_frames": 53382,
+    "fps": 15,
+    "raw_archive_public": false
+  },
+  "policy_contract": {
+    "family": "ACT",
+    "vision_backbone": "ResNet18",
+    "state_dimensions": 18,
+    "action_dimensions": 6,
+    "action_representation": "joint_delta",
+    "chunk_size": 10,
+    "n_action_steps": 5,
+    "image_keys": [
+      "observation.images.front",
+      "observation.images.wrist"
+    ],
+    "image_shape_chw": [3, 480, 480]
+  },
+  "camera_pipeline": {
+    "front": "640x480 MJPG",
+    "wrist": "640x480 YUY2",
+    "transport": "Windows DirectShow to WSL TCP/JPEG bridge with END/ACK",
+    "dual_stream_audit_seconds": 60,
+    "front_achieved_fps": 19.944,
+    "wrist_achieved_fps": 15.05,
+    "cross_camera_skew_p95_ms": 22.875,
+    "decode_failures": 0,
+    "crc_failures": 0,
+    "sequence_gaps": 0
+  },
+  "offline_and_read_only_gates": {
+    "guard_self_audit": "11/11",
+    "live_observation_fail_closed": "16/16",
+    "inert_read_only_adapter": "17/17",
+    "one_shot_joint_read": "PASS"
+  },
+  "live_shadow": {
+    "duration_seconds": 60,
+    "replans_completed": 180,
+    "replans_expected": 180,
+    "rate_hz": 3.0,
+    "actions_sent": 0,
+    "inference_p95_ms": 74.839
+  },
+  "controlled_episode": {
+    "execution_pass": true,
+    "replans_completed": 180,
+    "replans_expected": 180,
+    "policy_commands_acknowledged": 900,
+    "policy_commands_expected": 900,
+    "elapsed_seconds": 75.36869562299398,
+    "rate_clips": 0,
+    "new_boundary_crossings": 0,
+    "tracking_trips": 0,
+    "max_guard_invariant_error": 0.0,
+    "inference_p95_ms": 81.12338599166831,
+    "returned_home": true,
+    "torque_disabled_at_exit": true,
+    "serial_closed": true,
+    "camera_workers_closed": true,
+    "automatic_second_episode_authorized": false
+  },
+  "task_outcome": {
+    "manual_review_complete": true,
+    "task_success": false,
+    "cube_grasped": false,
+    "gripper_command_min": 27.648575,
+    "gripper_command_max": 27.837341,
+    "diagnosis": "Gripper output collapsed to a narrow hold-like range and did not reproduce open/close transitions."
+  },
+  "checkpoint_diagnosis": {
+    "v3_steps_audited": [16000, 20000, 24000, 28000, 32000, 36000, 40000],
+    "v3_all_close_open_recall_zero": true,
+    "v4_sampling_source_background_close_open": [0.8853, 0.0578, 0.0569],
+    "v4_sampling_target_background_close_open": [0.5, 0.25, 0.25],
+    "v4_best_close_recall": {
+      "step": 16000,
+      "value": 0.5
+    },
+    "v4_best_open_recall": {
+      "step": 20000,
+      "value": 0.324
+    },
+    "same_checkpoint_achieved_both_best_values": false,
+    "any_checkpoint_passed_joint_direction_and_amplitude_gate": false
+  },
+  "freeze": {
+    "decision": "V4_20K_NO_TRANSITION_CHECKPOINT_PASSED_FINAL_PROJECT_STOP",
+    "v3_v4_training_frozen": true,
+    "hardware_retest_frozen": true,
+    "autonomous_deployment_authorized": false,
+    "home_to_park_live_validated": false
+  },
+  "provenance": {
+    "controlled_episode_created_at_utc": "2026-08-21T10:12:14.097863+00:00",
+    "controlled_episode_report_sha256": "140186b5d144452692af7d9c5144f48a67e378eb525bd8d9ec81e98fc99f9850",
+    "front_image_sha256": "95313646aff5590855072c8048170554ba5eb5256658d94f8741981e9b179f11",
+    "wrist_image_sha256": "6ef68da1e4b7682073805fed5043b4f30ae5626bbb8f74bb759af6885c41eafc"
+  }
+}

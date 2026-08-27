@@ -3,6 +3,10 @@ name: embodiedarm
 channels:
   - conda-forge
 
+# WSL bootstrap environment. The frozen vendor LeRobot checkout and the
+# CUDA-compatible PyTorch build are installed separately; see
+# docs/DEPENDENCIES.md. This file intentionally does not pretend to be a full
+# cross-machine CUDA lockfile.
 dependencies:
   - python=3.10.18
   - pip
@@ -11,3 +15,15 @@ dependencies:
   - pytest
   - ruff
   - mypy
+  - pip:
+      - numpy==2.2.6
+      - opencv-python==5.0.0.93
+      # Bounds inherited from the frozen LeRobot 0.3.4 source baseline.
+      # The exact CUDA wheel must still match the host driver.
+      - torch>=2.2.1,<2.8.0
+      - torchvision>=0.21.0,<0.23.0
+      - torchcodec>=0.2.1,<0.6.0
+      - datasets>=2.19.0,<=3.6.0
+      - transformers>=4.50.3,<4.52.0
+      - safetensors>=0.4.3
+      - feetech-servo-sdk>=1.0.0

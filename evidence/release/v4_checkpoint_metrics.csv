@@ -1,0 +1,6 @@
+step,close_recall,close_amplitude,open_recall,open_amplitude,passes_joint_gate
+4000,0.000,0.030,0.000,0.073,false
+8000,0.090,0.007,0.000,0.067,false
+12000,0.346,0.052,0.000,0.051,false
+16000,0.500,0.239,0.015,0.055,false
+20000,0.474,0.170,0.324,0.069,false
