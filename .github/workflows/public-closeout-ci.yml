@@ -1,0 +1,81 @@
+name: Public closeout CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-verification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Compile Python sources
+        run: python -m compileall -q scripts
+
+      - name: Check shell syntax
+        shell: bash
+        run: |
+          find scripts -type f -name '*.sh' -print0 \
+            | xargs -0 -r -n1 bash -n
+
+      - name: Run pure CPU guard self-audit
+        run: |
+          python scripts/runtime/act_v3_delta_runtime_guard.py \
+            --contract configs/safety/act_v3_delta_runtime_limit_contract.json \
+            --calibration evidence/release/fixtures/follower_white_calibration_semantics.json \
+            --output-json "${RUNNER_TEMP}/guard_self_audit.json"
+          python - "${RUNNER_TEMP}/guard_self_audit.json" <<'PY'
+          import json
+          import sys
+
+          report = json.load(open(sys.argv[1], encoding="utf-8"))
+          audit = report["algorithm_self_audit"]
+          assert audit["tests_passed"] == audit["tests_total"] == 11
+          assert report["hardware_access_authorized"] is False
+          print("CPU GUARD SELF-AUDIT: 11/11 PASS")
+          PY
+
+      - name: Verify public evidence and claims
+        run: python scripts/release/verify_public_closeout.py
+
+      - name: Check patch whitespace
+        run: git diff --check HEAD
+
+  stage1-release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: static-verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out verified commit
+        uses: actions/checkout@v4
+
+      - name: Create Stage 1 release once
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view v0.1.0-stage1 >/dev/null 2>&1; then
+            echo "v0.1.0-stage1 already exists; nothing to do"
+          else
+            gh release create v0.1.0-stage1 \
+              --target "${GITHUB_SHA}" \
+              --title "v0.1.0-stage1 — Stage 1 closed/frozen" \
+              --notes-file RELEASE_NOTES_v0.1.0-stage1.md
+          fi

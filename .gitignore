@@ -47,3 +47,6 @@ logs/
 *:Zone.Identifier
 
 *.bak
+
+# Local manifest may contain host, GPU, and path metadata.
+evidence/release/runtime_manifest.local.json
